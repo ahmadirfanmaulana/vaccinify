@@ -83,7 +83,7 @@ class SocietyTableSeeder extends Seeder
                     if ($j >= 7 && $j <= 8) {
                         $first = Vaccination::create([
                             'dose' => 1,
-                            'date' => '2021-10-27',
+                            'date' => '2021-10-25',
                             'society_id' => $society->id,
                             'spot_id' => $faker->randomElement($spots),
                         ]);

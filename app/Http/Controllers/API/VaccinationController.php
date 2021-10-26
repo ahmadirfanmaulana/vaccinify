@@ -72,7 +72,9 @@ class VaccinationController extends Controller
             'spot_id' => $request->spot_id,
         ]);
 
-        return response()->json(['message' => 'Register vaccination success'], 200);
+        $message = ($vaccination->dose == 1 ? 'First' : 'Second') . ' vaccination registered successful';
+
+        return response()->json(['message' => $message], 200);
 
     }
 }
