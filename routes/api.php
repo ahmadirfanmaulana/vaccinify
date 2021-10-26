@@ -25,7 +25,7 @@ Route::group(['prefix' => '/v1'], function () {
     Route::post('/auth/logout', [\App\Http\Controllers\API\AuthController::class, 'logout']);
 
     // Consult
-    Route::resource('/consultation', \App\Http\Controllers\API\ConsultationController::class);
+    Route::resource('/consultations', \App\Http\Controllers\API\ConsultationController::class);
 
     // Vaccination
     Route::resource('/vaccinations', \App\Http\Controllers\API\VaccinationController::class);

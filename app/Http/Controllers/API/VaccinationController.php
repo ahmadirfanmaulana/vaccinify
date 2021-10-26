@@ -7,6 +7,7 @@ use App\Models\Consultation;
 use App\Models\Society;
 use App\Models\Vaccination;
 use Illuminate\Http\Request;
+use Validator;
 
 class VaccinationController extends Controller
 {
@@ -19,10 +20,12 @@ class VaccinationController extends Controller
 
     public function index (Request $request) {
         $user = $this->user->where('login_tokens', $request->token)->first();
-        if (!$user) return response()->json(['message' => 'Unauthorized user'], 401);
+        if (!$user  || !$request->token) return response()->json(['message' => 'Unauthorized user'], 401);
 
-        $first = $this->vaccination->where('society_id', $user->id)->with(['spot.regional', 'vaccine', 'doctor', 'officer'])->first();
+        $first  = $this->vaccination->where('society_id', $user->id)->with(['spot.regional', 'vaccine', 'doctor', 'officer'])->first();
+        if ($first) $first->spot = collect($first->spot)->forget('available_vaccines');
         $second = $this->vaccination->where('society_id', $user->id)->with(['spot.regional', 'vaccine', 'doctor', 'officer'])->skip(1)->first();
+        if ($second) $second->spot = collect($second->spot)->forget('available_vaccines');
 
         return response()->json([
             'first' => $first,
@@ -32,7 +35,18 @@ class VaccinationController extends Controller
 
     public function store (Request $request) {
         $user = $this->user->where('login_tokens', $request->token)->first();
-        if (!$user) return response()->json(['message' => 'Unauthorized user'], 401);
+        if (!$user  || !$request->token) return response()->json(['message' => 'Unauthorized user'], 401);
+
+        // If the society consultation hasn’t accepted by doctor
+        $consultation = $this->consultation->where('society_id', $user->id)->first();
+        if (!$consultation) return response()->json(['message' => 'Your consultation must be accepted by doctor before'], 401);
+
+        // Invalid Field
+        $validator = Validator::make($request->all(), [
+            'date' => 'required|date_format:Y-m-d',
+            'spot_id' => 'required',
+        ]);
+        if ($validator->fails()) return response()->json(['message' => 'Invalid field', 'errors' => $validator->errors()]);
 
         // < 30 day
         $vaccination = $this->vaccination->where('society_id', $user->id)->first();

@@ -21,12 +21,7 @@ class SpotTableSeeder extends Seeder
 
         $regionals = [
             'DKI Jakarta'  => ['Central Jakarta', 'South Jakarta'],
-            'West Java'    => ['Bandung', 'Bogor'],
-            'Central Java' => ['Semarang'],
-            'East Java'    => ['Surabaya', 'Malang'],
-            'Banten'       => ['Tangerang', 'Serang'],
-            'DI Yogyakarta'=> ['Yogyakarta', 'Bantul'],
-            'Bali'         => ['Denpasar', 'Badung']
+            'West Java'    => ['Bandung'],
         ];
 
         foreach ($regionals as $province => $districts) {

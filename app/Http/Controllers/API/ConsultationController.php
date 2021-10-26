@@ -18,14 +18,17 @@ class ConsultationController extends Controller
 
     public function index (Request $request) {
         $user = $this->user->where('login_tokens', $request->token)->first();
-        if (!$user) return response()->json(['message' => 'Unauthorized user'], 401);
-        $consultation = $this->consultation->with(['doctor'])->where('society_id', $user->id)->first();
-        return response()->json($consultation, 200);
+        if (!$user  || !$request->token) return response()->json(['message' => 'Unauthorized user'], 401);
+
+        $consultation = $this->consultation->where('society_id', $user->id)->with(['doctor'])->first();
+        return response()->json([
+            'consultation' => $consultation
+        ], 200);
     }
 
     public function store (Request $request) {
         $user = $this->user->where('login_tokens', $request->token)->first();
-        if (!$user) return response()->json(['message' => 'Unauthorized user'], 401);
+        if (!$user  || !$request->token) return response()->json(['message' => 'Unauthorized user'], 401);
 
         // validator
         $consultation = $this->consultation->where('society_id', $user->id)->first();
@@ -37,6 +40,6 @@ class ConsultationController extends Controller
             'current_symptoms' => $request->current_symptoms,
         ]);
 
-        return response()->json(['message' => 'Consultation success'], 200);
+        return response()->json(['message' => 'Request consultation sent successful'], 200);
     }
 }

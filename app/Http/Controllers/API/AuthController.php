@@ -27,12 +27,12 @@ class AuthController extends Controller
             return response()->json($user, 200);
         }
 
-        return response()->json(['message' => 'ID card number or password not correct'], 401);
+        return response()->json(['message' => 'ID Card Number or Password incorrect'], 401);
     }
 
     public function logout (Request $request) {
         $user = $this->user->where('login_tokens', $request->token)->first();
-        if (!$user) return response()->json(['message' => 'Unauthorized user'], 401);
+        if (!$user || !$request->token) return response()->json(['message' => 'Invalid token'], 401);
 
         $user->update(['login_tokens' => NULL]);
         return response()->json(['message' => 'Logout success'], 200);
